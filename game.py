@@ -1,6 +1,6 @@
 import pygame
 import config
-from gfx import COLORS
+from gfx import Color
 
 class Game:
     def __init__(self):
@@ -22,6 +22,6 @@ class Game:
                 break
 
     def update_gfx(self):
-        self.screen.fill(COLORS.DARK_BLUE)
+        self.screen.fill(Color.DARK_BLUE)
         pygame.display.update()
         self.clock.tick(config.SCREEN_REFRESH_RATE)
