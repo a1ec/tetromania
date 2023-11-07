@@ -1,68 +1,22 @@
-import gfx
-from gfx import BLOCK_SIZE, GRID_OPACITY, COLORS, FG_COLOR
-from config import SCREEN_RESOLUTION, ORIGIN
-
 import pygame
-
-class Block:
-    def __init__(self, grid):
-        self.x = 0
-        self.y = 0
-        self.new_x = None
-        self.new_y = None 
-        self.width = 1
-        self.height = 1
-        self.color = 2
-        self.grid = grid
-
-    def place(self, x, y):
-        self.x = x
-        self.y = y
-
-    def move(self, dx=0, dy=0):
-        self.new_x = self.x + dx
-        if not self.has_hit_sides():
-            self.x = self.new_x
-        self.new_y = self.y + dy
-        if not self.has_hit_bottom():
-            self.y = self.new_y
-
-    def draw(self):
-        self.grid.outline_cell(self.x, self.y, self.color)
-
-    def set_color(self, color):
-        self.color = color
-
-    def cycle_color(self):
-        self.color += 1
-        self.color %= len(COLORS)
-
-    def set_down(self):
-        self.grid.set_cell(self.x, self.y, self.color)
-
-    def has_hit_sides(self):
-        if self.new_x < 0 or self.new_x + self.width > self.grid.width:
-            return True
-        return False
-
-    def has_hit_bottom(self):
-        if self.new_y + self.height > self.grid.height:
-            return True
-        return False
-
+import gfx
+from gfx import CELL_SIZE_PIXELS, GRID_OPACITY, COLORS, FG_COLOR, GRID_ROWS_HIDDEN
+from config import SCREEN_RESOLUTION, ORIGIN
 
 class Grid:
     def __init__(self, width, height, lines_opacity=GRID_OPACITY):
         self.width = width
         self.height = height
         self.cells = None
-        self.surface = pygame.Surface(SCREEN_RESOLUTION)
-        self.overlay = pygame.Surface(SCREEN_RESOLUTION, pygame.SRCALPHA)
+        SURFACE_RESOLUTION = CELL_SIZE_PIXELS * self.width, CELL_SIZE_PIXELS * self.height
+        self.surface = pygame.Surface(SURFACE_RESOLUTION)
+        self.overlay = pygame.Surface(SURFACE_RESOLUTION, pygame.SRCALPHA)
         self.lines_opacity = lines_opacity
-        self.init_overlay()
+        self.init_gridlines()
         self.clear_cells()
+        self.lines_made = 0
 
-    def init_overlay(self, grid_size=BLOCK_SIZE, color=FG_COLOR, opacity=GRID_OPACITY):
+    def init_gridlines(self, grid_size=CELL_SIZE_PIXELS, color=FG_COLOR, opacity=GRID_OPACITY):
         'Draws a translucent grid onto a surface'
         opacity = (opacity, )
         # Draw the grid lines on the grid surface
@@ -83,6 +37,19 @@ class Grid:
         'Clears all grid elements to zero'
         self.cells = [[0 for _ in range(self.width)] for _ in range(self.height)]
 
+    def clear_full_lines(self):
+        l = self.cells
+        # Create a new list to store the rows we want to keep
+        new_l = [row for row in l if 0 in row]
+        # Calculate the number of full rows that were removed
+        num_full_rows = len(l) - len(new_l)
+        self.lines_made += num_full_rows
+
+        # Add the same number of empty rows at the top
+        for _ in range(num_full_rows):
+            new_l.insert(0, [0]*len(l[0]))
+        self.cells = new_l
+
     def draw_cells(self):
         'Draw all the cells in the grid'
         y = 0
@@ -97,21 +64,21 @@ class Grid:
         'Draw a filled block on the surface'
         pygame.draw.rect(self.surface,
                          COLORS[color] + (255, ),
-                         pygame.Rect(x*BLOCK_SIZE, y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
+                         pygame.Rect(x*CELL_SIZE_PIXELS, (y+GRID_ROWS_HIDDEN)*CELL_SIZE_PIXELS, CELL_SIZE_PIXELS, CELL_SIZE_PIXELS))
 
     def outline_cell(self, x, y, color):
         'Draw an unfilled block on the surface'
         pygame.draw.rect(self.surface,
                          COLORS[color] + (255, ),
-                         pygame.Rect(x*BLOCK_SIZE, y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE), 1)
+                         pygame.Rect(x*CELL_SIZE_PIXELS, (y+GRID_ROWS_HIDDEN)*CELL_SIZE_PIXELS, CELL_SIZE_PIXELS, CELL_SIZE_PIXELS), 1)
 
-    def get_centre(self):
+    @property
+    def centre(self):
         return int(self.width/2), int(self.height/2)
 
-    def draw_overlay(self):
+    def draw_gridlines(self):
         self.surface.blit(self.overlay, ORIGIN)
 
-    def draw(self):
+    def update_gfx(self):
         self.draw_cells()
-        self.draw_overlay()
-
+        self.draw_gridlines()

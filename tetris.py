@@ -1,48 +1,35 @@
 import sys
-import random
-from copy import copy
+
 import pygame
+
 from game import Game
 import config
-from config import ORIGIN
-from gfx import GRID_WIDTH, GRID_HEIGHT, COLORS
-from shape import Shapes
-from block import Block, Grid
+from config import ORIGIN, SCREEN_WIDTH, SCREEN_HEIGHT
 
-class Event:
-    ENACT_GRAVITY = pygame.USEREVENT + 1
-    HIT_WALL = pygame.USEREVENT + 2
-    BLOCK_SET = pygame.USEREVENT + 3
-
-    hit_wall = pygame.event.Event(HIT_WALL, message='Donk!')
-    block_set = pygame.event.Event(BLOCK_SET)
-
-class Player:
-    def __init__(self, grid: Grid):
-        self.grid = grid
-
+from piece import Piece
+from grid import Grid
+import gfx
+from gfx import GRID_COLS, GRID_ROWS
+from event import Event
+from bitmapfont import BitmapFont
 
 class Tetris(Game):
     def __init__(self):
         super().__init__()
-        self.grid = Grid(GRID_WIDTH, GRID_HEIGHT)
-        self.player = Player(self.grid)
-        self.cursor = Block(self.grid)
-        self.shapes = []
-        self.shape = None
-        self.get_next_shape()
-
-    def get_next_shape(self):
-        if not self.shapes:
-            self.shapes = copy(Shapes)
-            random.shuffle(self.shapes)
-        self.shape = self.shapes.pop()
+        self.grid = Grid(GRID_COLS, GRID_ROWS)
+        self.piece = Piece(self.grid)
+        self.font = BitmapFont(config.FONT_FILENAME, config.FONT_WIDTH, config.FONT_HEIGHT)
+        self.paused = False
 
     def run(self):
         self.running = True
+        pygame.time.set_timer(Event.GRAVITY, 500)
         while self.running:
             self.get_user_events()
             self.update_gfx()
+
+    def toggle_pause(self):
+        self.paused = not self.paused
 
     def stop(self):
         self.running = False
@@ -60,34 +47,39 @@ class Tetris(Game):
                 self.quit()
                 break
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    self.piece.update_position(dy=1)
+                if event.key == pygame.K_UP:
+                    self.piece.update_position(dy=-1)
+                if event.key == pygame.K_RIGHT:
+                    self.piece.update_position(dx=1)
+                if event.key == pygame.K_LEFT:
+                    self.piece.update_position(dx=-1)
+                if event.key == pygame.K_LSHIFT:
+                    self.piece.update_position(drotate=1)
+                if event.key == pygame.K_c:
+                    self.grid.clear_cells()
+                if event.key == pygame.K_p:
+                    self.grid.clear_cells()
                 if event.key == pygame.K_ESCAPE:
                     self.quit()
                     break
-                if event.key == pygame.K_DOWN:
-                    self.cursor.move(dy=1)
-                if event.key == pygame.K_UP:
-                    self.cursor.move(dy=-1)
-                if event.key == pygame.K_RIGHT:
-                    self.cursor.move(dx=1)
-                if event.key == pygame.K_LEFT:
-                    self.cursor.move(dx=-1)
-                if event.key == pygame.K_LCTRL:
-                    self.cursor.set_down()
-                if event.key == pygame.K_LSHIFT:
-                    self.shape.rotate()
-                if event.key == pygame.K_RSHIFT:
-                    self.get_next_shape()
-                if event.key == pygame.K_c:
-                    self.grid.clear_cells()
-                if event.key == pygame.K_SPACE:
-                    self.shape.set_on_grid(self.grid.cells, self.cursor.x, self.cursor.y)
-            if event.type == Event.HIT_WALL:
-                print(event.message)
+            if event.type == Event.GRAVITY:
+                self.piece.update_position(dy=1)
+            #if event.type == Event.GAME_OVER:
+            #    print(event.message)
 
     def update_gfx(self):
-        self.screen.blit(self.grid.surface, ORIGIN)
-        self.grid.draw()
-        self.shape.draw(self.cursor.x, self.cursor.y, self.screen)
-        self.cursor.draw()
+        self.grid.update_gfx()
+        # this should be partial blit - everything execpt top two rows
+        # Rect(left, top, width, height)
+        self.status_text = f'-----------\nPIECES: {self.piece.count}\n-----------\nLINES: {self.grid.lines_made}\n\n\n\n\n\n\nTetromania\n(c) Maxivision 1986\n'
+        self.font.draw_text(self.status_text, self.screen, gfx.CENTRE_SCREEN_X, config.FONT_HEIGHT)
+        self.screen.blit(self.grid.surface,
+                         gfx.GRID_CENTRE_SCREEN_DEST_RECT,
+                         area=gfx.GRID_VISIBLE_SRC_RECT)
+        self.piece.draw_to_surface(self.screen,
+                                   x_offset=gfx.GRID_CENTRE_SCREEN_DEST_RECT[0])
+        self.piece.draw_next(self.screen, int(SCREEN_WIDTH*0.6), int(SCREEN_HEIGHT/2))
         pygame.display.update()
         self.clock.tick(config.SCREEN_REFRESH_RATE)

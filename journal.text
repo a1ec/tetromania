@@ -1,0 +1,29 @@
+TODO
+ - fix game over bug condition
+ - show next piece
+ - simple sounds
+ - decreasing fall interval
+
+WISH
+ - track dirty rects
+
+Tue 07 Nov 2023
+Block collision and grid bounds.
+Gravity and score.
+
+Mon 06 Nov 2023
+Fixed bug for detecting whether can plot shape.
+
+Sat 04 Nov 2023
+Pieces generation and buggy drawing onto the grid. 
+
+Wed 01 Nov 2023
+Uninterrupted 9-4 PM, working mostly smoothly with pygame.
+Started procedurally from tutorial at
+https://www.youtube.com/watch?v=nF_crEtmpBo
+https://github.com/educ8s/Python-Tetris-Game-Pygame/blob/main/game.py
+Then gradual refactor into classes.
+Bing GPT-4 good to:
+ - suggest review aspects of code
+ - explicitly find some bugs related to drawing introduced while reorganising code 
+Session close with a prototype functionality: single block move around grid. 

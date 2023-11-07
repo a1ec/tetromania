@@ -6,7 +6,7 @@ class Game:
     def __init__(self):
         pygame.init()
         self.clock = pygame.time.Clock()
-        self.screen = pygame.display.set_mode(config.SCREEN_RESOLUTION)#, pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode(config.SCREEN_RESOLUTION, pygame.NOFRAME)
         self.running = False
 
     def run(self):
