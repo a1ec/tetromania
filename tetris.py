@@ -9,7 +9,7 @@ from config import ORIGIN, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_RESOLUTION
 from piece import Piece
 from grid import Grid
 import gfx
-from gfx import GRID_COLS, GRID_ROWS
+from gfx import GRID_COLS, GRID_ROWS, CELL_SIZE_PIXELS
 from event import Event
 from bitmapfont import BitmapFont
 
@@ -19,7 +19,6 @@ class Tetris(Game):
         self.grid = Grid(GRID_COLS, GRID_ROWS)
         self.piece = Piece(self.grid)
         self.font = BitmapFont(config.FONT_FILENAME, config.FONT_WIDTH, config.FONT_HEIGHT)
-        self.pause_overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.is_pause_drawn = False
         self.paused = False
         self.key_actions = {
@@ -33,7 +32,6 @@ class Tetris(Game):
             pygame.K_F11: 'toggle_fullscreen',
             pygame.K_ESCAPE: 'quit',
         }
-        self.init_pause_overlay(fill_color=gfx.WHITE)
         self.fullscreen = False
 
     def run(self):
@@ -60,22 +58,9 @@ class Tetris(Game):
         self.screen.blit(temp_surface, ORIGIN)  # Blit the old screen surface onto the new one
         pygame.display.flip()
 
-    def init_pause_overlay(self, fill_color=(0,0,0), alpha=255):
-        # Create a new surface with the same size as the main screen
-        self.pause_overlay.fill(gfx.BLACK)
-        #self.pause_overlay.set_alpha(alpha)  # Alpha can be from 0 (fully transparent) to 255 (fully opaque)
-        # Draw the crosshatch pattern
-        crosshatch_size = 1  # Size of each square in the crosshatch pattern
-        for i in range(0, SCREEN_WIDTH, crosshatch_size):
-            for j in range(0, SCREEN_HEIGHT, crosshatch_size):
-                if (i // crosshatch_size + j // crosshatch_size) % 2 == 0:
-                    pygame.draw.rect(self.pause_overlay, fill_color + (0,), (i, j, crosshatch_size, crosshatch_size))  # Set every other square to be fully transparent
-
-
     def draw_pause_screen(self):
-        # Draw the overlay onto the main screen
-        self.screen.blit(self.pause_overlay, ORIGIN, special_flags=pygame.BLEND_RGBA_SUB)
-        pygame.display.update()
+        gfx.draw_crosshatch(self.screen, gfx.BLACK, crosshatch_size=1)
+        pygame.display.flip()
 
     def quit(self):
         pygame.quit()
@@ -115,6 +100,7 @@ class Tetris(Game):
                          area=gfx.GRID_VISIBLE_SRC_RECT)
         self.piece.draw_to_surface(self.screen,
                                    x_offset=gfx.GRID_CENTRE_SCREEN_DEST_RECT[0])
+        pygame.draw.rect(self.screen, gfx.BLACK, (int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT*1/2), CELL_SIZE_PIXELS*4, CELL_SIZE_PIXELS*2))
         self.piece.draw_next(self.screen, gfx.CENTRE_SCREEN_X, int(SCREEN_HEIGHT*0.5))
         pygame.display.update()
         self.clock.tick(config.SCREEN_REFRESH_RATE)

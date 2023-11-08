@@ -58,6 +58,13 @@ COLORS = [DARK_GREY, DARK_BLUE, GREEN, RED, ORANGE, YELLOW,
 BG_COLOR = DARK_GREY
 FG_COLOR = WHITE
 
+def draw_crosshatch(surface, color, crosshatch_size=1):
+    width, height = surface.get_size()
+    for i in range(0, width, crosshatch_size):
+        for j in range(0, height, crosshatch_size):
+            if (i + j) % (2 * crosshatch_size) == 0:
+                pygame.draw.rect(surface, color, (i, j, crosshatch_size, crosshatch_size))
+
 def fill_cell(grid_x, grid_y, color, surface, x_offset=0, y_offset=0):
     'Draw a filled cell on a Surface'
     pygame.draw.rect(surface, COLORS[color] + (255, ),
