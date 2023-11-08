@@ -34,6 +34,7 @@ class Color(Enum):
     WHITE = (255, 255, 255)
     LIGHT_BLUE = (59, 85, 162)
     MAGENTA = (255, 0, 255)
+    BLACK = (0, 0, 0)
 
 DARK_GREY = (26, 31, 40)
 DARK_BLUE = (44, 44, 127)
@@ -47,9 +48,10 @@ BLUE = (13, 64, 216)
 WHITE = (255, 255, 255)
 LIGHT_BLUE = (59, 85, 162)
 MAGENTA = (255, 0, 255)
+BLACK = (0, 0, 0)
 
 COLORS = [DARK_GREY, DARK_BLUE, GREEN, RED, ORANGE, YELLOW,
-         PURPLE, CYAN, BLUE, WHITE, LIGHT_BLUE, MAGENTA]
+         PURPLE, CYAN, BLUE, WHITE, LIGHT_BLUE, MAGENTA, BLACK]
 
 #COLORS = {color: i for i, color in enumerate(Color)}
 

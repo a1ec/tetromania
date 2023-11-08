@@ -12,26 +12,26 @@ def is_copy_cells_ok(src, dest, x_offset, y_offset):
 
     # Check if the source grid fits within the destination grid with the given offsets
     if x_offset < 0: 
-        print("x_offset < 0")
+        #print("x_offset < 0")
         return False
 
     if x_offset + src_width > dest_width:
-        print("x_offset + src_width > dest_width")
+        #print("x_offset + src_width > dest_width")
         return False
 
     if y_offset < 0:
-        print("y_offset < 0")
+        #print("y_offset < 0")
         return False
     
     if y_offset + src_height > dest_height:
-        print("y_offset + src_height > dest_height")
+        #print("y_offset + src_height > dest_height")
         return False
 
     # Check if any non-zero part of the source grid would write over a non-zero part of the destination grid
     for i in range(src_height):
         for j in range(src_width):
             if src[i][j] != 0 and dest[i + y_offset][j + x_offset] != 0:
-                print(f"Overlap: at x, y: {j + x_offset}, {i + y_offset}")
+                #print(f"Overlap: at x, y: {j + x_offset}, {i + y_offset}")
                 return False
     return True
 
@@ -96,7 +96,6 @@ class Piece:
         self.y = y
 
     def gameover(self):
-        print('Game over!')
         pygame.event.post(Event.game_over)
 
     def spawn_new(self):
@@ -154,27 +153,26 @@ class Piece:
         self.spawn_new()
         self.grid.clear_full_lines()
 
-    def draw_to_surface(self, surface, x_offset=0, y_offset=0, shape_cells=None, color=None):
+    def draw_to_surface(self, surface, x_offset=0, y_offset=0, shape_cells=None, color=None, x=None, y=None):
         'Draws the shape to screen only, for play or next'
         # Use instance variables if no argument is provided
         if shape_cells is None:
             shape_cells = self.cells
         if color is None:
             color = self.cell_value
+        if x is None:
+            x = self.x
+        if y is None:
+            y = self.y
 
-        # calculate the x, y offset of the shape on screen
-        #print(f'{self.x=}, {self.y=}')
         for row in range(len(shape_cells)):
             for col in range(len(shape_cells[row])):
                 if shape_cells[row][col] != 0:
-                    x = self.x + col
-                    y = self.y + row
-                    fill_cell(x, y, color, surface, x_offset, y_offset)
-
+                    fill_cell(x + col, y + row, color, surface, x_offset, y_offset)
 
     def draw_next(self, surface, x_offset, y_offset):
         color = color_to_index[self.next_shape.color]
-        self.draw_to_surface(surface, x_offset, y_offset, shape_cells=self.next_shape.cells, color=color)
+        self.draw_to_surface(surface, x_offset, y_offset, shape_cells=self.next_shape.cells, color=color, x=0, y=0)
 
     def get_safe_rotation_index(self, index):
         index %= len(self.shape.rotations)

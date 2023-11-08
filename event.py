@@ -9,5 +9,5 @@ class Event:
     GRAVITY = pygame.USEREVENT + 6
     hit_wall = pygame.event.Event(HIT_WALL, message='Donk!')
     block_fixed = pygame.event.Event(BLOCK_FIXED)
-    game_over = pygame.event.Event(GAME_OVER, message='Game Over')
+    game_over = pygame.event.Event(GAME_OVER)
     gravity = pygame.event.Event(GRAVITY)

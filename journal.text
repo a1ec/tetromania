@@ -7,6 +7,9 @@ TODO
 WISH
  - track dirty rects
 
+Wed 08 Nov 2023
+Added pause game, initial next piece preview.
+
 Tue 07 Nov 2023
 Block collision and grid bounds.
 Gravity and score.
