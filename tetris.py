@@ -4,7 +4,7 @@ import pygame
 
 from game import Game
 import config
-from config import ORIGIN, SCREEN_WIDTH, SCREEN_HEIGHT
+from config import ORIGIN, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_RESOLUTION
 
 from piece import Piece
 from grid import Grid
@@ -30,7 +30,8 @@ class Tetris(Game):
             pygame.K_LSHIFT: (0, 0, 1),
             pygame.K_c: 'clear',
             pygame.K_p: 'pause',
-            pygame.K_ESCAPE: 'quit'
+            pygame.K_F11: 'toggle_fullscreen',
+            pygame.K_ESCAPE: 'quit',
         }
         self.init_pause_overlay(fill_color=gfx.WHITE)
         self.fullscreen = False
@@ -51,6 +52,13 @@ class Tetris(Game):
     def toggle_fullscreen(self):
         self.fullscreen = not self.fullscreen
         self.paused = True
+        temp_surface = self.screen.copy()
+        if self.fullscreen:
+            self.screen = pygame.display.set_mode(SCREEN_RESOLUTION, pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode(SCREEN_RESOLUTION, pygame.NOFRAME)
+        self.screen.blit(temp_surface, ORIGIN)  # Blit the old screen surface onto the new one
+        pygame.display.flip()
 
     def init_pause_overlay(self, fill_color=(0,0,0), alpha=255):
         # Create a new surface with the same size as the main screen
@@ -84,6 +92,8 @@ class Tetris(Game):
                         self.quit()
                     elif action == 'pause':
                         self.toggle_pause()
+                    elif action == 'toggle_fullscreen':
+                        self.toggle_fullscreen()
                     elif action == 'clear':
                         self.grid.clear_cells()
                     else:
