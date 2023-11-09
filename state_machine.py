@@ -47,22 +47,10 @@ class StateMachine:
     def handle_transitions(self):
         'Scene changes occur via certain keypresses'
         keys = pygame.key.get_pressed()
-        for key, state in self.transitions.items():
-            if keys[key[1]]:
-                self.transition(state)
+        for (state, key), new_state in self.transitions.items():
+            if keys[key] and self.current_state == self.states[state]:
+                self.transition(new_state)
                 break
-
-    def handle_transitions(self):
-        keys = pygame.key.get_pressed()
-        if isinstance(self.current_state, Menu) and keys[pygame.K_LSHIFT]:
-            self.transition("Game")
-        elif isinstance(self.current_state, Pause) and keys[pygame.K_p]:
-            self.transition("Game")
-        elif isinstance(self.current_state, Game):
-            if keys[pygame.K_p]:
-                self.transition("Pause")
-            elif keys[pygame.K_ESCAPE]:
-                self.transition("Menu")
 
     def run(self):
         while True:

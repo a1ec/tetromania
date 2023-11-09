@@ -7,7 +7,7 @@ from gfx import CELL_SIZE_PIXELS, GRID_COLS, GRID_ROWS, draw_crosshatch
 from grid import Grid
 from piece import Piece
 from event import Event
-
+from bitmapfont import BitmapFont
 class Scene:
     def __init__(self, state_machine):
         self.screen = state_machine.screen
@@ -24,7 +24,9 @@ class Scene:
 class Menu(Scene):
     def __init__(self, state_machine):
         super().__init__(state_machine)
-        self.text = f'{NAME}\n{COPYRIGHT}\n\nEsc - Quit\nLSHIFT - New Game\nF11 - Toggle Fullscreen'
+        self.menu_font = BitmapFont(config.FONT_FILENAME, config.FONT_WIDTH, config.FONT_HEIGHT, gfx.BLACK)
+        self.text = f'{NAME}\n{COPYRIGHT}'
+        self.menu_text = 'Esc - Quit\nLSHIFT - New Game\nF11 - Toggle Fullscreen'
         self.key_actions = {
             pygame.K_ESCAPE: 'quit',
         }
@@ -42,6 +44,8 @@ class Menu(Scene):
     def update_gfx(self):
         gfx.draw_crosshatch(self.screen, gfx.BLUE, crosshatch_size=1)
         self.font.draw_text(self.text, self.screen, gfx.CENTRE_SCREEN_X, config.SCREEN_HEIGHT - config.FONT_HEIGHT - (8 * config.FONT_HEIGHT))
+        self.menu_font.draw_text(self.menu_text, self.screen, gfx.CENTRE_SCREEN_X, config.SCREEN_HEIGHT - config.FONT_HEIGHT - (4 * config.FONT_HEIGHT))
+
         super().update_gfx()
 
     def quit(self):
@@ -63,6 +67,7 @@ class Game(Scene):
             pygame.K_LEFT: (-1, 0, 0),
             pygame.K_LSHIFT: (0, 0, 1),
             pygame.K_c: 'clear',
+            pygame.K_g: 'toggle_gridlines',
         }
 
     def handle_events(self, events):
@@ -72,6 +77,8 @@ class Game(Scene):
                 if action is not None:
                     if action == 'clear':
                         self.grid.clear_cells()
+                    elif action == 'toggle_gridlines':
+                        self.grid.toggle_gridlines()
                     else:
                         dx, dy, drotate = action
                         self.piece.update_position(dx=dx, dy=dy, drotate=drotate)

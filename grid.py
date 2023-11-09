@@ -15,6 +15,7 @@ class Grid:
         self.init_gridlines()
         self.clear_cells()
         self.lines_made = 0
+        self.gridlines_on = False
 
     def init_gridlines(self, grid_size=CELL_SIZE_PIXELS, color=FG_COLOR, opacity=GRID_OPACITY):
         'Draws a translucent grid onto a surface'
@@ -28,6 +29,9 @@ class Grid:
             if x != 0:
                 x -= 1
             pygame.draw.line(self.overlay, color + opacity, (x, 0), (x, self.height * grid_size), 1)
+
+    def toggle_gridlines(self):
+        self.gridlines_on = not self.gridlines_on
 
     def set_cell(self, x, y, color):
         'Sets grid value to a color (non-zero)'
@@ -81,4 +85,5 @@ class Grid:
 
     def update_gfx(self):
         self.draw_cells()
-        self.draw_gridlines()
+        if self.gridlines_on:
+            self.draw_gridlines()
