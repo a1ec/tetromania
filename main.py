@@ -1,8 +1,14 @@
 import threading
-from tetris import Tetris
+from state_machine import StateMachine
 
-game = Tetris()
-# Separate game thread permits interactive Python shell
-# for object inspection 
+game = StateMachine()
+# Separate game thread for object inspection in shell
 game_thread = threading.Thread(target=game.run)
-game_thread.start()
+
+def main():
+    game_thread.start()
+
+if __name__ == "__main__":
+    main()
+
+ 

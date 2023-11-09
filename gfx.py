@@ -21,6 +21,8 @@ GRID_VISIBLE_SRC_RECT = pygame.Rect(0, GRID_ROWS_HIDDEN * CELL_SIZE_PIXELS,
                                     GRID_WIDTH_PIXELS,
                                     GRID_HEIGHT_PIXELS)
 
+INITIAL_GRAVITY_INTERVAL_MS = 400
+
 class Color(Enum):
     DARK_GREY = (26, 31, 40)
     DARK_BLUE = (44, 44, 127)

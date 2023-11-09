@@ -91,7 +91,7 @@ class Tetris(Game):
         self.grid.update_gfx()
         # this should be partial blit - everything execpt top two rows
         # Rect(left, top, width, height)
-        self.status_text = f'PIECE: {self.piece.count}  LINES: {self.grid.lines_made}\n\nTETROMANIA\n(c) MAXIVISION 1985'
+        self.status_text = f'PIECE: {self.piece.count}  LINES: {self.grid.lines_made}'
         self.font.draw_text(self.status_text, self.screen, gfx.CENTRE_SCREEN_X, SCREEN_HEIGHT - config.FONT_HEIGHT - (4 * config.FONT_HEIGHT))
         self.font.draw_text('', self.screen, gfx.CENTRE_SCREEN_X, SCREEN_HEIGHT - config.FONT_HEIGHT)
         
