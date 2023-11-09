@@ -1,7 +1,7 @@
 import pygame
 import config
 from config import SCREEN_RESOLUTION, ORIGIN
-from bitmapfont import BitmapFont
+from bitmap_font import BitmapFont
 from scene import Menu, Game, Pause
 
 class StateMachine:

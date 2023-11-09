@@ -7,7 +7,7 @@ from gfx import CELL_SIZE_PIXELS, GRID_COLS, GRID_ROWS, draw_crosshatch
 from grid import Grid
 from piece import Piece
 from event import Event
-from bitmapfont import BitmapFont
+from bitmap_font import BitmapFont
 class Scene:
     def __init__(self, state_machine):
         self.screen = state_machine.screen
