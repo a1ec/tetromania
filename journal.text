@@ -1,11 +1,15 @@
 TODO
- - fix game over bug condition
- - show next piece
+ - fix status area drawing
+ - implement game over
+ - fix sticky pause - keypress cooldown
  - simple sounds
  - decreasing fall interval
 
 WISH
  - track dirty rects
+
+Thu 09 Nov 2023
+Reorganised as state machine.
 
 Wed 08 Nov 2023
 Added pause game, initial next piece preview.
