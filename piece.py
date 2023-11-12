@@ -5,10 +5,10 @@ from shape import Shape, Tetrominoes, color_to_index
 from gfx import Color, fill_cell, GRID_ROWS_HIDDEN
 from event import Event
 
-def is_copy_cells_ok(src, dest, x_offset, y_offset):
+def no_collision(src_cells, dest_cells, x_offset, y_offset):
     # Get the dimensions of the source and destination grids
-    src_height, src_width = len(src), len(src[0])
-    dest_height, dest_width = len(dest), len(dest[0])
+    src_height, src_width = len(src_cells), len(src_cells[0])
+    dest_height, dest_width = len(dest_cells), len(dest_cells[0])
 
     # Check if the source grid fits within the destination grid with the given offsets
     if x_offset < 0: 
@@ -24,13 +24,13 @@ def is_copy_cells_ok(src, dest, x_offset, y_offset):
         return False
     
     if y_offset + src_height > dest_height:
-        #print("y_offset + src_height > dest_height")
+        #print(f"{y_offset=} + {src_height=} > {dest_height=}")
         return False
 
     # Check if any non-zero part of the source grid would write over a non-zero part of the destination grid
     for i in range(src_height):
         for j in range(src_width):
-            if src[i][j] != 0 and dest[i + y_offset][j + x_offset] != 0:
+            if src_cells[i][j] != 0 and dest_cells[i + y_offset][j + x_offset] != 0:
                 #print(f"Overlap: at x, y: {j + x_offset}, {i + y_offset}")
                 return False
     return True
@@ -95,22 +95,25 @@ class Piece:
         self.x = x
         self.y = y
 
-    def gameover(self):
+    def game_over(self):
         pygame.event.post(Event.game_over)
 
     def spawn_new(self):
         'New piece at top'
         self.get_next_shape()
         self.place(self.grid.centre[0] - int(self.width/2), GRID_ROWS_HIDDEN)
-        if not is_copy_cells_ok(self.new_cells, self.grid.cells, self.new_x, self.new_y):
-            self.gameover()
+        self.update_position()
+        # check if placement is overwriting
+        if not no_collision(self.new_cells, self.grid.cells, self.x, self.y):
+            self.game_over()
 
     def update_position(self, dx=0, dy=0, drotate=0):
+        'Translate or rotate the piece.'
         self.new_x = self.x + dx
         self.new_y = self.y + dy
         self._new_rotation_index = self.get_safe_rotation_index(self._rotation_index + drotate)
         self.new_cells = self.shape.rotations[self._new_rotation_index]
-        if is_copy_cells_ok(self.new_cells, self.grid.cells, self.new_x, self.new_y):
+        if no_collision(self.new_cells, self.grid.cells, self.new_x, self.new_y):
             # within grid bounds and no overlapping blocks 👍
             self.new_position_to_current()
         elif dy != 0 and dx == 0:
@@ -134,7 +137,7 @@ class Piece:
             print(list2D_to_text(shape),'\n')
 
     def set_on_grid(self):
-        if is_copy_cells_ok(self.new_cells, self.grid.cells, self.new_x, self.new_y):
+        if no_collision(self.new_cells, self.grid.cells, self.new_x, self.new_y):
             # Plot the values onto the grid_cells
             for row in range(self.height):
                 for col in range(self.width):

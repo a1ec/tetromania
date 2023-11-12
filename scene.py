@@ -8,6 +8,8 @@ from grid import Grid
 from piece import Piece
 from event import Event
 from bitmap_font import BitmapFont
+
+
 class Scene:
     def __init__(self, state_machine):
         self.screen = state_machine.screen
@@ -20,6 +22,7 @@ class Scene:
     def update_gfx(self):
         pygame.display.update()
         self.clock.tick(config.SCREEN_REFRESH_RATE)
+
 
 class Menu(Scene):
     def __init__(self, state_machine):
@@ -84,16 +87,25 @@ class Game(Scene):
                         self.piece.update_position(dx=dx, dy=dy, drotate=drotate)
             elif event.type == Event.GRAVITY:
                 self.piece.update_position(dy=1)
+            elif event.type == Event.GAME_OVER:
+                pass
 
-    def update_gfx(self):
+    def update_grid_area(self):
         self.grid.update_gfx()
-        self.status_text = f'PIECE: {self.piece.count}  LINES: {self.grid.lines_made}'
-        self.font.draw_text(self.status_text, self.screen, gfx.CENTRE_SCREEN_X, SCREEN_HEIGHT - config.FONT_HEIGHT - (4 * config.FONT_HEIGHT))
-        #self.font.draw_text('', self.screen, gfx.CENTRE_SCREEN_X, SCREEN_HEIGHT - config.FONT_HEIGHT)        
         self.screen.blit(self.grid.surface, gfx.GRID_CENTRE_SCREEN_DEST_RECT, area=gfx.GRID_VISIBLE_SRC_RECT)
         self.piece.draw_to_surface(self.screen, x_offset=gfx.GRID_CENTRE_SCREEN_DEST_RECT[0])
+
+    def update_status_area(self):
+        # draw next piece
         pygame.draw.rect(self.screen, gfx.BLACK, (int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT*1/2), CELL_SIZE_PIXELS*4, CELL_SIZE_PIXELS*2))
         self.piece.draw_next(self.screen, gfx.CENTRE_SCREEN_X, int(SCREEN_HEIGHT*0.5))
+        # draw score
+        self.status_text = f'PIECE: {self.piece.count}  LINES: {self.grid.lines_made}'
+        self.font.draw_text(self.status_text, self.screen, gfx.CENTRE_SCREEN_X, SCREEN_HEIGHT - config.FONT_HEIGHT - (4 * config.FONT_HEIGHT))
+
+    def update_gfx(self):
+        self.update_grid_area()
+        self.update_status_area()
         super().update_gfx()
 
 
@@ -103,4 +115,15 @@ class Pause(Scene):
 
     def update_gfx(self):
         gfx.draw_crosshatch(self.screen, gfx.BLACK, crosshatch_size=1)
+        super().update_gfx()
+
+
+class GameOver(Scene):
+    def __init__(self, state_machine):
+        super().__init__(state_machine)
+
+    def update_gfx(self):
+        gfx.draw_crosshatch(self.screen, gfx.RED, crosshatch_size=1)
+        self.status_text = f'GAME OVER M0IK!'
+        self.font.draw_text(self.status_text, self.screen, gfx.CENTRE_SCREEN_X, gfx.CENTRE_SCREEN_X)
         super().update_gfx()
