@@ -26,6 +26,8 @@ class StateMachine:
 
     def transition(self, new_state):
         print(f'{self.current_state} -> {self.states[new_state]}')
+        if new_state == 'Game' and self.states['Game'].is_over == True:
+            self.states['Game'] = Game(self)
         self.current_state = self.states[new_state]
 
     def handle_events(self, events):

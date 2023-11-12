@@ -62,6 +62,7 @@ class Game(Scene):
         self.grid = Grid(GRID_COLS, GRID_ROWS)
         self.piece = Piece(self.grid)
         pygame.time.set_timer(Event.GRAVITY, gfx.INITIAL_GRAVITY_INTERVAL_MS)
+        self.is_over = False
 
         self.key_actions = {
             pygame.K_DOWN: (0, 1, 0),
@@ -88,7 +89,7 @@ class Game(Scene):
             elif event.type == Event.GRAVITY:
                 self.piece.update_position(dy=1)
             elif event.type == Event.GAME_OVER:
-                pass
+                self.is_over = True
 
     def update_grid_area(self):
         self.grid.update_gfx()
