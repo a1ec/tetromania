@@ -1,12 +1,17 @@
 TODO
  - fix status area drawing
- - implement game over
+ - increasing difficulty 
  - fix sticky pause - keypress cooldown
  - simple sounds
- - decreasing fall interval
 
 WISH
  - track dirty rects
+ - shape rotation around centre
+
+CHANGELOG
+
+Mon 13 Nov 2023
+Game over functionality.
 
 Thu 09 Nov 2023
 Reorganised as state machine.
