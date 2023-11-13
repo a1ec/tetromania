@@ -29,7 +29,7 @@ class Menu(Scene):
         super().__init__(state_machine)
         self.menu_font = BitmapFont(config.FONT_FILENAME, config.FONT_WIDTH, config.FONT_HEIGHT, gfx.BLACK)
         self.text = f'{NAME}\n{COPYRIGHT}'
-        self.menu_text = 'Esc - Quit\nLSHIFT - New Game\nF11 - Toggle Fullscreen'
+        self.menu_text = 'LShift - Play\nF11 - Toggle Fullscreen\nEsc - Quit'
         self.key_actions = {
             pygame.K_ESCAPE: 'quit',
         }
@@ -45,6 +45,7 @@ class Menu(Scene):
                         self.quit()
 
     def update_gfx(self):
+        pygame.draw.rect(self.screen, gfx.DARK_BLUE, (int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT*1/2), SCREEN_WIDTH, SCREEN_HEIGHT))
         gfx.draw_crosshatch(self.screen, gfx.BLUE, crosshatch_size=1)
         self.font.draw_text(self.text, self.screen, gfx.CENTRE_SCREEN_X, config.SCREEN_HEIGHT - config.FONT_HEIGHT - (8 * config.FONT_HEIGHT))
         self.menu_font.draw_text(self.menu_text, self.screen, gfx.CENTRE_SCREEN_X, config.SCREEN_HEIGHT - config.FONT_HEIGHT - (4 * config.FONT_HEIGHT))
@@ -97,6 +98,7 @@ class Game(Scene):
         self.piece.draw_to_surface(self.screen, x_offset=gfx.GRID_CENTRE_SCREEN_DEST_RECT[0])
 
     def update_status_area(self):
+        pygame.draw.rect(self.screen, gfx.DARK_BLUE, (int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT*1/2), SCREEN_WIDTH, SCREEN_HEIGHT))
         # draw next piece
         pygame.draw.rect(self.screen, gfx.BLACK, (int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT*1/2), CELL_SIZE_PIXELS*4, CELL_SIZE_PIXELS*2))
         self.piece.draw_next(self.screen, gfx.CENTRE_SCREEN_X, int(SCREEN_HEIGHT*0.5))
